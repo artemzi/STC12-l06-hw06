@@ -3,7 +3,7 @@ package com.github.artemzi.hw06;
 import java.util.concurrent.TimeUnit;
 
 public class TimeThread implements Runnable {
-    long startTime;
+    private long startTime;
 
     TimeThread(long startTime) {
         this.startTime = startTime;
@@ -18,7 +18,7 @@ public class TimeThread implements Runnable {
                try {
                    synchronized (Monitor.class) {
                        ++Monitor.interval;
-                       System.out.printf("Passed %d seconds\n", seconds);
+                       System.out.printf("%d seconds passed\n", seconds);
                        Monitor.class.notifyAll();
                    }
                    Thread.sleep(1000);
