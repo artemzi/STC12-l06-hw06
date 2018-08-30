@@ -1,37 +1,30 @@
 package com.github.artemzi.hw06;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
-public class TimeThread extends Thread {
-    Object monitor;
+public class TimeThread implements Runnable {
+    long startTime;
 
-    public void setMonitor(Object monitor) {
-        this.monitor = monitor;
-}
+    TimeThread(long startTime) {
+        this.startTime = startTime;
+    }
 
     @Override
     public void run() {
-        int counter = 0;
-        synchronized (monitor) {
-           while(true) {
-                Date date = new Date(System.currentTimeMillis());
-                DateFormat formatter = new SimpleDateFormat("ss.SSS");
-                formatter.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+        synchronized (this) {
+            while(true) {
+                long seconds = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTime) + 1;
 
-                System.out.println("Seconds from current time: " + formatter.format(date));
-                try {
-                    ++counter;
-                    if ((counter % 5) == 0) {
-                        monitor.notify();
-                        monitor.wait();
-                    }
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    System.err.println("Something wrong in TimeThread");
-                }
+               try {
+                   synchronized (Monitor.class) {
+                       ++Monitor.interval;
+                       System.out.printf("Passed %d seconds\n", seconds);
+                       Monitor.class.notifyAll();
+                   }
+                   Thread.sleep(1000);
+               } catch (InterruptedException e) {
+                    System.err.println("[TimeThread say] " + e.getMessage());
+               }
             }
         }
     }
