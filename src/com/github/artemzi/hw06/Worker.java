@@ -30,7 +30,7 @@ public class Worker implements Runnable {
     }
 
     public static class Message {
-        synchronized static void write(String text, int id) {
+        static void write(String text, int id) {
             System.out.printf("[interval value=%d] %s%d\n", Monitor.interval, text, id);
         }
     }
